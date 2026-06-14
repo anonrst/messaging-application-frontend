@@ -6,10 +6,21 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
-
-import type { Route } from "./+types/root";
+import { Provider } from "react-redux";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import "./app.css";
+import type { Route } from "./+types/root";
+import { RStore } from "./util/redux/store";
 
+const tanstackQueryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 1000 * 60 * 2, // 2  min, fetch data again on every 2 min
+      refetchOnWindowFocus: true,
+    }
+  }
+});
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -42,7 +53,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+
+  return (
+    <>
+      <Provider store={RStore}>
+        <QueryClientProvider client={tanstackQueryClient}>
+          <Outlet />
+        </QueryClientProvider>
+      </Provider>
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
