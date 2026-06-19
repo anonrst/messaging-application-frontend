@@ -1,10 +1,12 @@
-import type { InitialUserAuthStateType, User } from "@/types/auth.types";
+import type { InitialUserAuthStateType, ServerDTO, User } from "@/types/auth.types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialUserAuthState: InitialUserAuthStateType = {
     user: null,
-    isAuthenticated: false
+    isAuthenticated: false,
+    currentServer:null
 }
+
 
 const authSlice = createSlice({
     name: "auth",
@@ -17,9 +19,16 @@ const authSlice = createSlice({
         logout: (state: InitialUserAuthStateType) => {
             state.isAuthenticated = false;
             state.user = null;
+            state.currentServer = null;
+        },
+        setCurrentServer: (state:InitialUserAuthStateType, selectedServer:PayloadAction<ServerDTO>) => {
+            state.currentServer = selectedServer.payload;
         }
     }
 });
 
-export const { loginSuccess, logout} = authSlice.actions;
+
+export const { loginSuccess, logout,setCurrentServer} = authSlice.actions;
 export default authSlice.reducer;
+
+
